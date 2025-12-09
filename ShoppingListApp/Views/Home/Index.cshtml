@@ -1,0 +1,119 @@
+﻿@model IEnumerable<ShoppingListApp.Models.Item>
+
+@{
+    ViewData["Title"] = "Shopping List";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4"> Shopping List Application</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Select an Item</h4>
+            <select id="itemListBox" size="10" class="form-control">
+                @foreach (var item in Model)
+                {
+                    <option value="@item.Id" data-price="@item.Price" data-image-url="@item.ImageUrl">
+                        @item.Name
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <h4>Item Details</h4>
+            <div class="mb-3">
+                <label for="imageBox" class="form-label">Image:</label>
+                <div style="border: 1px solid #ccc; height: 150px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+
+
+                    <img id="imageBox" src="" alt="Selected Item Image" style="max-width: 100%; max-height: 100%; display: none;" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="textbox1" class="form-label">Price:</label>
+                <input type="text" id="textbox1" readonly class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label for="textbox2" class="form-label">Quantity:</label>
+                <input type="number" id="textbox2" value="1" min="1" class="form-control" />
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h4>Calculation</h4>
+            <div class="mb-3">
+                <button id="calculateButton" class="btn btn-primary w-100">Calculate Total Cost</button>
+            </div>
+
+            <hr />
+
+            <div class="mb-3">
+                <label for="textbox3" class="form-label">Total Cost:</label>
+                <input type="text" id="textbox3" readonly class="form-control" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            
+            $('#itemListBox').change(function () {
+                var selectedOption = $(this).find('option:selected');
+                var price = selectedOption.data('price');
+                var imageUrl = selectedOption.data('imageUrl');
+
+                
+                $('#textbox1').val(price ? parseFloat(price).toFixed(2) : '');
+
+                
+                var $imageBox = $('#imageBox');
+                if (imageUrl) {
+                    $imageBox.attr('src', imageUrl).show();
+                } else {
+                    $imageBox.hide().attr('src', '');
+                }
+
+                
+                $('#textbox2').val(1); 
+                $('#textbox3').val('');
+            });
+
+            
+            $('#calculateButton').click(function () {
+                var priceText = $('#textbox1').val();
+                var quantityText = $('#textbox2').val();
+
+                if (!priceText) {
+                    alert('Please select an item first.');
+                    return;
+                }
+
+                
+                var price = parseFloat(priceText);
+                var quantity = parseInt(quantityText);
+
+               
+                if (isNaN(price) || isNaN(quantity) || quantity <= 0) {
+                    alert('Please enter a valid, positive quantity.');
+                    $('#textbox3').val('');
+                    return;
+                }
+
+               
+                var totalCost = price * quantity;
+
+                
+                $('#textbox3').val(totalCost.toFixed(2));
+            });
+
+            
+        });
+    </script>
+}
